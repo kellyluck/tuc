@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Parcel Sandbox</title>
+    <meta charset="UTF-8" />
+    <script>
+        // Global array to hold the loaded CSV data
+        let tucData = [];
+
+        let tucFile = `Banana,20.00,
+Grapefruit ,10.00,
+School bus,1065.00,
+Basketball,24.00,
+Washing machine,60.00,
+Inch,2.54,
+Foot,30.48,
+Yard,91.44,
+Mile,160934.00,
+Furlong,20116.80,
+Mustard seed,0.20,quite small
+Cubit,53.34,
+DVD,12.00,without case
+Elephant (African),731.52,
+Elephant (Indian),640.08,
+Horse,240.00,aka a 'Length' in racing parlance
+Grand piano,211.00,
+Football field (US),4880,
+Texas,124400000.00,from east to west
+Rhode Island,7724851.00,from north to south
+1970 Buick Skylark,520.70,
+City block,8046.72,standard NYC size
+Footbal field (EU),10500,
+Potrzebie,0.22633484517438173216473,thickness of Mad issue 26
+Altuve,165,height of Houston Astros pitcher Jose Altuve
+Beard-second,0.000001,the amount a beard grows in 1 second
+Sheppey,140000,according to Douglas Adams & John Lloyd: the closest distance at which sheep remain picturesque
+Smoot,170,length of Oliver R Smoot; used to measure the Harvard Bridge in 1958 (364.4 Smoots +/- 1 ear)
+Broad side of a barn (BOSB),1219.2,assuming standard 40' pole barn
+Nanoacre,20.1168,
+Rack Unit,444.5,
+Hand,10.16,usually employed in measuring horses for some reason
+Earth,637100000,
+Astronomical Unit,14959787070000,
+Light Seconds,29980000000,
+Salt granule,.03,
+Suit lapels (1970's),12.7,
+Suit lapels (other),8.255,
+Light year,946073047258000000,
+Death Star,16000000,
+Hertz,29979245800,
+Parsec,3085677581280000000,
+Centiemter,1,
+Meter,100,
+Kilometers,100000,
+Empire State Building,38100`;
+
+        // Function to load the CSV file
+        function loadCSV() {
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+
+            // Create a new File object
+            const myFile = new File([tucFile], 'tucdata.csv', {
+                type: 'text/plain',
+                lastModified: new Date(),
+            });
+
+            // Now let's create a DataTransfer to get a FileList
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(myFile);
+            fileInput.files = dataTransfer.files;
+
+            //fileInput.addEventListener("change", function (event) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const contents = e.target.result;
+                processData(contents);
+            };
+
+            reader.readAsText(file);
+            //});
+
+            //fileInput.click();
+        }
+
+        // Function to process the loaded CSV data
+        function processData(csvContent) {
+            const lines = csvContent.split("\n");
+            tucData = lines.map((line) => {
+                const values = line.split(",");
+                const stringValue = values[0].trim();
+                const numberValue = Number(values[1].trim());
+                const commentValue = values[2] === undefined ? "" : values[2].trim();
+                return { string: stringValue, number: numberValue, comment: commentValue };
+            });
+            let tuc2 = tucData.sort(
+                (p1, p2) => (p1.string > p2.string) ? 1 : (p1.string < p2.string) ? -1 : 0);
+            populateDropdowns();
+        }
+
+        // Function to populate the dropdowns with the strings from tucData
+        function populateDropdowns() {
+            const dropdown1 = document.getElementById("dropdown1");
+            const dropdown2 = document.getElementById("dropdown2");
+
+            tucData.forEach((item) => {
+                const option1 = document.createElement("option");
+                option1.value = item.string;
+                option1.text = item.string;
+                dropdown1.appendChild(option1);
+
+                const option2 = document.createElement("option");
+                option2.value = item.string;
+                option2.text = item.string;
+                dropdown2.appendChild(option2);
+            });
+
+            document.getElementById("numberInput").value = '1';
+            dropdown1.value = 'Empire State Building';
+            dropdown2.value = 'Banana';
+        }
+
+
+        function showComment(value, commentControl) {
+            const tucEntry = tucData.find(
+                (item) => item.string === value
+            );
+            commentctl=document.getElementById(commentControl);
+            commentctl.innerHTML = tucEntry.comment;
+        }
+
+        // Function to perform the calculation and display the result
+        function calculate() {
+            const numberInput = document.getElementById("numberInput").value;
+            const dropdown1 = document.getElementById("dropdown1");
+            const selectedString1 =
+                dropdown1.options[dropdown1.selectedIndex].value;
+            const dropdown2 = document.getElementById("dropdown2");
+            const selectedString2 =
+                dropdown2.options[dropdown2.selectedIndex].value;
+
+            const selectedData1 = tucData.find(
+                (item) => item.string === selectedString1
+            );
+            const selectedData2 = tucData.find(
+                (item) => item.string === selectedString2
+            );
+
+            const c = Number(numberInput);
+            const d = selectedData1.number;
+            const m = selectedData2.number;
+
+            const result = (c * d) / m;
+
+            const resultElement = document.getElementById("result");
+            resultElement.textContent = `Result: ${c} ${selectedString1}(s) = ${result.toLocaleString('en-US')} ${selectedString2}(s)`;
+        }
+
+        function startUp() {
+            // Event listener for the Calculate button
+            const calculateButton = document.getElementById("calculateButton");
+            calculateButton.addEventListener("click", calculate);
+            loadCSV();
+        }
+    </script>
+</head>
+
+<body onload="javascript:startUp()">
+    <div id="app"></div>
+
+    <h1>The Truly Universal Converter</h1>
+    <p />
+    <h3>Dedicated to the Great American People, who apparently will use <i>anything</i> for measurement other than the
+        metric system.</h3>
+    <label for="numberInput">Enter a unit to convert:</label>
+    <input type="number" id="numberInput" />
+    <br />
+    <label for="dropdown1">Base unit:</label>
+    <select id="dropdown1" onchange="showComment(this.value, 'comment1');"></select>
+    &nbsp;
+    <label id="comment1"></label>
+    <br />
+    <label for="dropdown2">New unit:</label>
+    <select id="dropdown2" onchange="showComment(this.value, 'comment2');"></select>
+    &nbsp;
+    <label id="comment2"></label>
+    <br />
+    <button id="calculateButton">Calculate</button>
+    <p id="result"></p>
+</body>
+
+</html>
