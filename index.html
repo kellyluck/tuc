@@ -196,7 +196,7 @@ Empire State Building,38100`;
         // used exactly as shown (you can change the numbering system if you wish)
 
         // American Numbering System
-        var th = ['', 'thousand', 'million', 'billion', 'trillion'];
+        var th = ['', 'thousand,', 'million,', 'billion,', 'trillion,'];
         // uncomment this line for English Number System
         // var th = ['','thousand','million', 'milliard','billion'];
 
@@ -230,7 +230,7 @@ Empire State Building,38100`;
                 } else if (n[i] != 0) {
                     str += dg[n[i]] + ' ';
                     if ((x - i) % 3 == 0)
-                        str += 'hundred ';
+                        str += 'hundred, ';
                     sk = 1;
                 }
                 if ((x - i) % 3 == 1) {
@@ -242,8 +242,11 @@ Empire State Building,38100`;
             if (x != s.length) {
                 var y = s.length;
                 str += 'point ';
-                for (var i = x + 1; i < y; i++)
-                    str += dg[n[i]] + ' ';
+                for (var i = x + 1; i < y; i++){
+                    str += dg[n[i]]; //+ '-';
+                    if (i < y-1) str += '-';
+                }
+
             }
             return str.replace(/\s+/g, ' ');
         }
