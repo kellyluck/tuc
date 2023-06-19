@@ -158,14 +158,28 @@ Empire State Building,38100`;
             const result = (c * d) / m;
             // if < 1, can trim down to 20 decimal places but no trialing zeros
             // this is for super small numbers, e.g., 5e-8, which cannot be word-parsed properly.
-            var resultString = result.toFixed(20).replace(/(\.\d*?[1-9])0+$/g, "$1"); 
+            var resultString = result.toFixed(20).replace(/(\.\d*?[1-9])0+$/g, "$1");
             if (result >= 1.0) resultString = result; // if 1 or above, just use regular string 
             const resultWords = toWords(resultString);
+            if (result >= 1000) resultString = addCommas(resultString);
             const useWords = (!resultWords.startsWith("too") && !resultWords.startsWith("not")); // was unable to parse
             const resultElement = document.getElementById("result");
             resultElement.textContent = useWords
-                ? `Result: ${c} ${selectedString1}(s) = ${resultWords} (${resultString.toLocaleString('en-US')}) ${selectedString2}(s)`
-                : `Result: ${c} ${selectedString1}(s) = ${resultString.toLocaleString('en-US')} ${selectedString2}(s)`;
+                ? `Result: ${c} ${selectedString1}(s) = ${resultWords} (${resultString}) ${selectedString2}(s)`
+                : `Result: ${c} ${selectedString1}(s) = ${resultString} ${selectedString2}(s)`;
+        }
+
+        function addCommas(num) {
+            var withCommas = num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+            const decimalPlace=withCommas.toString().indexOf('.');
+            if (decimalPlace > -1) {
+                // it tries to add commas after the decimal point as well, and it super doesn't work, so...
+                const strNum=num.toString();
+                const compo=withCommas.substr(0,decimalPlace) + strNum.substr(strNum.indexOf('.'));
+                return compo;
+            } else {
+                return withCommas;
+            }
         }
 
         function startUp() {
