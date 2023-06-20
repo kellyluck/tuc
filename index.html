@@ -2,13 +2,20 @@
 <html>
 
 <head>
-    <title>The Truly Useful Converter</title>
+    <title>The Truly Universal Converter</title>
     <meta charset="UTF-8" />
     <script>
         // Global array to hold the loaded CSV data
         let tucData = [];
 
-        let tucFile = `Banana,20.00,
+        // volume measurements in liters
+        let tucVolume = `Grand Canyon,4166824000000000,
+        Penguins,2,
+        Golf ball,0.677,
+        Swimming pool (olympic),2500000`;
+
+        // length measurements in cm
+        let tucLength = `Banana,20.00,
 Grapefruit ,10.00,
 School bus,1065.00,
 Basketball,24.00,
@@ -56,15 +63,17 @@ Kilometers,100000,
 VW Beetle,427.8,
 Titanic,26900,
 Hindenburg,24505.92,
+Golf ball,4.268,
 Empire State Building,38100`;
 
         // Function to load the CSV file
-        function loadCSV() {
+        function loadCSV(tucDataset) {
             const fileInput = document.createElement("input");
             fileInput.type = "file";
 
             // Create a new File object
-            const myFile = new File([tucFile], 'tucdata.csv', {
+            var myFile;
+            myFile = new File([tucDataset], 'tucdata.csv', {
                 type: 'text/plain',
                 lastModified: new Date(),
             });
@@ -109,6 +118,8 @@ Empire State Building,38100`;
             const dropdown1 = document.getElementById("dropdown1");
             const dropdown2 = document.getElementById("dropdown2");
 
+            dropdown1.innerHTML = '';
+            dropdown2.innerHTML = '';
             tucData.forEach((item) => {
                 const option1 = document.createElement("option");
                 option1.value = item.string;
@@ -122,8 +133,12 @@ Empire State Building,38100`;
             });
 
             document.getElementById("numberInput").value = '1';
-            dropdown1.value = 'Empire State Building';
-            dropdown2.value = 'Banana';
+
+            // TODO: replace this with async call
+            if (document.getElementById("ddlMeasurement").value === "length") {
+                dropdown1.value = 'Empire State Building';
+                dropdown2.value = 'Banana';
+            }
         }
 
         function showComment(value, commentControl) {
@@ -171,11 +186,11 @@ Empire State Building,38100`;
 
         function addCommas(num) {
             var withCommas = num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-            const decimalPlace=withCommas.toString().indexOf('.');
+            const decimalPlace = withCommas.toString().indexOf('.');
             if (decimalPlace > -1) {
                 // it tries to add commas after the decimal point as well, and it super doesn't work, so...
-                const strNum=num.toString();
-                const compo=withCommas.substr(0,decimalPlace) + strNum.substr(strNum.indexOf('.'));
+                const strNum = num.toString();
+                const compo = withCommas.substr(0, decimalPlace) + strNum.substr(strNum.indexOf('.'));
                 return compo;
             } else {
                 return withCommas;
@@ -186,8 +201,26 @@ Empire State Building,38100`;
             // Event listener for the Calculate button
             const calculateButton = document.getElementById("calculateButton");
             calculateButton.addEventListener("click", calculate);
-            loadCSV();
+            loadCSV(tucLength);
         }
+
+        function changeMeasurement(measurement) {
+            switch (measurement) {
+                case 'length':
+                    loadCSV(tucLength);
+                    dropdown1.value = 'Empire State Building';
+                    dropdown2.value = 'Banana';
+                    break;
+                case 'volume':
+                    loadCSV(tucVolume);
+                    dropdown1.value = 'Grand Canyon';
+                    dropdown2.value = 'Swimming pool (olympic)';
+                    break;
+            }
+        }
+
+
+        //region NumToWords
 
         // Convert numbers to words
         // copyright 25th July 2006, by Stephen Chapman http://javascript.about.com
@@ -196,7 +229,7 @@ Empire State Building,38100`;
         // used exactly as shown (you can change the numbering system if you wish)
 
         // American Numbering System
-        var th = ['', 'thousand,', 'million,', 'billion,', 'trillion,'];
+        var th = ['', 'thousand,', 'million,', 'billion,', 'trillion,', 'quadrillion,', 'quintillion,'];
         // uncomment this line for English Number System
         // var th = ['','thousand','million', 'milliard','billion'];
 
@@ -212,7 +245,7 @@ Empire State Building,38100`;
             var x = s.indexOf('.');
             if (x == -1)
                 x = s.length;
-            if (x > 15)
+            if (x > 21)
                 return 'too big';
             var n = s.split('');
             var str = '';
@@ -242,14 +275,17 @@ Empire State Building,38100`;
             if (x != s.length) {
                 var y = s.length;
                 str += 'point ';
-                for (var i = x + 1; i < y; i++){
+                for (var i = x + 1; i < y; i++) {
                     str += dg[n[i]]; //+ '-';
-                    if (i < y-1) str += '-';
+                    if (i < y - 1) str += '-';
                 }
 
             }
             return str.replace(/\s+/g, ' ');
         }
+
+        //endregion
+
     </script>
 </head>
 
@@ -260,6 +296,13 @@ Empire State Building,38100`;
     <p />
     <h3>Dedicated to the Great American People, who apparently will use <i>anything</i> for measurement other than the
         metric system.</h3>
+    <br />
+    <label for="ddlMeasurement">Select a measurement:</label>
+    <select id="ddlMeasurement" onchange="changeMeasurement(this.value)">
+        <option value="length">Length</option>
+        <option value="volume">Volume</option>
+    </select>
+    <br />
     <label for="numberInput">Enter a unit to convert:</label>
     <input type="number" id="numberInput" />
     <br />
