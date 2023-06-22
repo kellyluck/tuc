@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html>
 
+<!-- 
+TODOS:
+To do the 'best fit' function, I think loop through each candidate, divide the
+larger by the smaller, and "floor" it, then remultiplyl that nad get the
+difference between the floor andthe full multipliers.
+Not sure how to handle it if the candidate is smaller but I can work it out.
+
+
+ -->
+
 <head>
     <title>The Truly Universal Converter</title>
     <meta charset="UTF-8" />
@@ -10,64 +20,90 @@
 
         // volume measurements in liters
         let tucVolume = `Grand Canyon,4166824000000000,
-        Penguins,2,
+        Royal Albert Hall,86649550,Not allowing for holes
+        Cord (firewood),3624.556,
+        Shipping container,32600,
         Golf ball,0.677,
+        Liter,1,
+        Gallon (US),3.785412,
+        Cubic centimeter,1000,
+        Cubic inch,0.01638706,
+        Hogshead,238.4809,
+        Cup (US),0.2365882,
+        Teaspoon (US),0.004928922,
         Swimming pool (olympic),2500000`;
+
+        // area in cm squared
+        let tucArea = `Nanoacre,.40468564224,
+        Football field (US),53512151.04,
+        Football field (FIFA World Cup),72115984.8,aveeraged from permissible min/max
+        Acre,40,468,564.2,`;
+
+        // capacity in bytes or chars (text)
+        let tucCapacity = `720k floppy,720000,
+        CD (74 min),650000000,
+        Blu-Ray,25000000000,per layer
+        DVD,4700000000`;
+        /* todo:
+            Dictionary,
+            King James Bible, */
+
 
         // length measurements in cm
         let tucLength = `Banana,20.00,
-Grapefruit ,10.00,
-School bus,1065.00,
-Basketball,24.00,
-Washing machine,60.00,
-Inch,2.54,
-Foot,30.48,
-Yard,91.44,
-Mile,160934.00,
-Furlong,20116.80,
-Mustard seed,0.20,quite small
-Cubit,53.34,
-DVD,12.00,without case
-Elephant (African),731.52,
-Elephant (Indian),640.08,
-Horse,240.00,aka a 'Length' in racing parlance
-Grand piano,211.00,
-Football field (US),4880,
-Texas,124400000.00,from east to west
-Rhode Island,7724851.00,from north to south
-1970 Buick Skylark,520.70,
-City block,8046.72,standard NYC size
-Footbal field (EU),10500,
-Potrzebie,0.22633484517438173216473,thickness of Mad issue 26
-Altuve,165,height of Houston Astros pitcher Jose Altuve
-Beard-second,0.000001,the amount a beard grows in 1 second
-Sheppey,140000,according to Douglas Adams & John Lloyd: the closest distance at which sheep remain picturesque
-Smoot,170,length of Oliver R Smoot; used to measure the Harvard Bridge in 1958 (364.4 Smoots +/- 1 ear)
-Broad side of a barn (BOSB),1219.2,assuming standard 40' pole barn
-Nanoacre,20.1168,
-Rack Unit,444.5,
-Hand,10.16,usually employed in measuring horses for some reason
-Earth,637100000,
-Astronomical Unit,14959787070000,
-Light Seconds,29980000000,
-Salt granule,.03,
-Suit lapels (1970's),12.7,
-Suit lapels (other),8.255,
-Light year,946073047258000000,
-Death Star,16000000,
-Hertz,29979245800,
-Parsec,3085677581280000000,
-Centiemter,1,
-Meter,100,
-Kilometers,100000,
-VW Beetle,427.8,
-Titanic,26900,
-Hindenburg,24505.92,
-Golf ball,4.268,
-Empire State Building,38100`;
+        Grapefruit,10.00,
+        School bus,1065.00,
+        Basketball,24.00,
+        Washing machine,60.00,
+        Inch,2.54,
+        Foot,30.48,
+        Yard,91.44,
+        Mile,160934.00,
+        Furlong,20116.80,
+        Mustard seed,0.20,quite small
+        Cubit,53.34,
+        DVD,12.00,without case
+        Elephant (African),731.52,
+        Elephant (Indian),640.08,
+        Horse,240.00,aka a 'Length' in racing parlance
+        Grand piano,211.00,
+        Football field (US),4880,
+        Texas,124400000.00,from east to west
+        Rhode Island,7724851.00,from north to south
+        1970 Buick Skylark,520.70,
+        City block,8046.72,standard NYC size
+        Football field (FIFA),10500,
+        Potrzebie,0.22633484517438173216473,thickness of Mad issue 26
+        Altuve,165,height of Houston Astros pitcher Jose Altuve
+        Beard-second,0.000001,the amount a beard grows in 1 second
+        Sheppey,140000,according to Douglas Adams & John Lloyd: the closest distance at which sheep remain picturesque
+        Smoot,170,length of Oliver R Smoot; used to measure the Harvard Bridge in 1958 (364.4 Smoots +/- 1 ear)
+        Broad side of a barn,1219.2,assuming standard 40' pole barn
+        Rack Unit,444.5,
+        Hand,10.16,usually employed in measuring horses for some reason
+        Earth,637100000,
+        Astronomical Unit,14959787070000,
+        Light Seconds,29980000000,
+        Salt granule,.03,
+        Suit lapels (1970's),12.7,
+        Suit lapels (other),8.255,
+        Light year,946073047258000000,
+        Death Star,16000000,
+        Hertz,29979245800,
+        Parsec,3085677581280000000,
+        Centiemter,1,
+        Meter,100,
+        Kilometers,100000,
+        VW Beetle,427.8,
+        Titanic,26900,
+        Hindenburg,24505.92,
+        Golf ball,4.268,
+        Shipping container (20ft),609.6,
+        Adult blue whale,3000,
+        Empire State Building,38100`;
 
         // Function to load the CSV file
-        function loadCSV(tucDataset) {
+        function loadCSV(tucDataset, callback) {
             const fileInput = document.createElement("input");
             fileInput.type = "file";
 
@@ -89,7 +125,7 @@ Empire State Building,38100`;
 
             reader.onload = function (e) {
                 const contents = e.target.result;
-                processData(contents);
+                processData(contents, callback);
             };
 
             reader.readAsText(file);
@@ -99,7 +135,7 @@ Empire State Building,38100`;
         }
 
         // Function to process the loaded CSV data
-        function processData(csvContent) {
+        function processData(csvContent, callback) {
             const lines = csvContent.split("\n");
             tucData = lines.map((line) => {
                 const values = line.split(",");
@@ -111,6 +147,8 @@ Empire State Building,38100`;
             let tuc2 = tucData.sort(
                 (p1, p2) => (p1.string > p2.string) ? 1 : (p1.string < p2.string) ? -1 : 0);
             populateDropdowns();
+
+            callback();
         }
 
         // Function to populate the dropdowns with the strings from tucData
@@ -138,6 +176,10 @@ Empire State Building,38100`;
             if (document.getElementById("ddlMeasurement").value === "length") {
                 dropdown1.value = 'Empire State Building';
                 dropdown2.value = 'Banana';
+            }
+            else {
+                dropdown1.selectedIndex = 0;
+                dropdown2.selectedIndex = 1;
             }
         }
 
@@ -201,26 +243,43 @@ Empire State Building,38100`;
             // Event listener for the Calculate button
             const calculateButton = document.getElementById("calculateButton");
             calculateButton.addEventListener("click", calculate);
-            loadCSV(tucLength);
+            loadCSV(tucLength, function () {
+                dropdown1.value = 'Empire State Building';
+                dropdown2.value = 'Banana';
+            });
         }
 
         function changeMeasurement(measurement) {
             switch (measurement) {
                 case 'length':
-                    loadCSV(tucLength);
-                    dropdown1.value = 'Empire State Building';
-                    dropdown2.value = 'Banana';
+                    loadCSV(tucLength, function () {
+                        dropdown1.value = 'Empire State Building';
+                        dropdown2.value = 'Banana';
+                    });
                     break;
                 case 'volume':
-                    loadCSV(tucVolume);
-                    dropdown1.value = 'Grand Canyon';
-                    dropdown2.value = 'Swimming pool (olympic)';
+                    loadCSV(tucVolume, function () {
+                        dropdown1.selectedIndex = 0;
+                        dropdown2.selectedIndex = 1;
+                    });
+                    break;
+                case 'area':
+                    loadCSV(tucArea, function () {
+                        dropdown1.selectedIndex = 0;
+                        dropdown2.selectedIndex = 1;
+                    });
+                    break;
+                case 'capacity':
+                    loadCSV(tucCapacity, function () {
+                        dropdown1.selectedIndex = 0;
+                        dropdown2.selectedIndex = 1;
+                    });
                     break;
             }
         }
 
 
-        //region NumToWords
+        //# region NumToWords
 
         // Convert numbers to words
         // copyright 25th July 2006, by Stephen Chapman http://javascript.about.com
@@ -300,7 +359,9 @@ Empire State Building,38100`;
     <label for="ddlMeasurement">Select a measurement:</label>
     <select id="ddlMeasurement" onchange="changeMeasurement(this.value)">
         <option value="length">Length</option>
+        <option value="area">Area</option>
         <option value="volume">Volume</option>
+        <option value="capacity">Data Capacity</option>
     </select>
     <br />
     <label for="numberInput">Enter a unit to convert:</label>
