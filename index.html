@@ -14,93 +14,20 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
 <head>
     <title>The Truly Universal Converter</title>
     <meta charset="UTF-8" />
+    <script src="numtowords.js"></script>
+    <script src="tucVolume.js"></script>
+    <script src="tucArea.js"></script>
+    <script src="tucCapacity.js"></script>
+    <script src="tucLength.js"></script>
     <script>
         // Global array to hold the loaded CSV data
         let tucData = [];
 
-        // volume measurements in liters
-        let tucVolume = `Grand Canyon,4166824000000000,
-        Royal Albert Hall,86649550,Not allowing for holes
-        Cord (firewood),3624.556,
-        Shipping container,32600,
-        Golf ball,0.677,
-        Liter,1,
-        Gallon (US),3.785412,
-        Cubic centimeter,1000,
-        Cubic inch,0.01638706,
-        Hogshead,238.4809,
-        Cup (US),0.2365882,
-        Teaspoon (US),0.004928922,
-        Swimming pool (olympic),2500000`;
-
-        // area in cm squared
-        let tucArea = `Nanoacre,.40468564224,
-        Football field (US),53512151.04,
-        Football field (FIFA World Cup),72115984.8,aveeraged from permissible min/max
-        Acre,40,468,564.2,`;
-
-        // capacity in bytes or chars (text)
-        let tucCapacity = `720k floppy,720000,
-        CD (74 min),650000000,
-        Blu-Ray,25000000000,per layer
-        DVD,4700000000`;
-        /* todo:
-            Dictionary,
-            King James Bible, */
 
 
-        // length measurements in cm
-        let tucLength = `Banana,20.00,
-        Grapefruit,10.00,
-        School bus,1065.00,
-        Basketball,24.00,
-        Washing machine,60.00,
-        Inch,2.54,
-        Foot,30.48,
-        Yard,91.44,
-        Mile,160934.00,
-        Furlong,20116.80,
-        Mustard seed,0.20,quite small
-        Cubit,53.34,
-        DVD,12.00,without case
-        Elephant (African),731.52,
-        Elephant (Indian),640.08,
-        Horse,240.00,aka a 'Length' in racing parlance
-        Grand piano,211.00,
-        Football field (US),4880,
-        Texas,124400000.00,from east to west
-        Rhode Island,7724851.00,from north to south
-        1970 Buick Skylark,520.70,
-        City block,8046.72,standard NYC size
-        Football field (FIFA),10500,
-        Potrzebie,0.22633484517438173216473,thickness of Mad issue 26
-        Altuve,165,height of Houston Astros pitcher Jose Altuve
-        Beard-second,0.000001,the amount a beard grows in 1 second
-        Sheppey,140000,according to Douglas Adams & John Lloyd: the closest distance at which sheep remain picturesque
-        Smoot,170,length of Oliver R Smoot; used to measure the Harvard Bridge in 1958 (364.4 Smoots +/- 1 ear)
-        Broad side of a barn,1219.2,assuming standard 40' pole barn
-        Rack Unit,444.5,
-        Hand,10.16,usually employed in measuring horses for some reason
-        Earth,637100000,
-        Astronomical Unit,14959787070000,
-        Light Seconds,29980000000,
-        Salt granule,.03,
-        Suit lapels (1970's),12.7,
-        Suit lapels (other),8.255,
-        Light year,946073047258000000,
-        Death Star,16000000,
-        Hertz,29979245800,
-        Parsec,3085677581280000000,
-        Centiemter,1,
-        Meter,100,
-        Kilometers,100000,
-        VW Beetle,427.8,
-        Titanic,26900,
-        Hindenburg,24505.92,
-        Golf ball,4.268,
-        Shipping container (20ft),609.6,
-        Adult blue whale,3000,
-        Empire State Building,38100`;
+
+
+
 
         // Function to load the CSV file
         function loadCSV(tucDataset, callback) {
@@ -226,18 +153,6 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
                 : `Result: ${c} ${selectedString1}(s) = ${resultString} ${selectedString2}(s)`;
         }
 
-        function addCommas(num) {
-            var withCommas = num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-            const decimalPlace = withCommas.toString().indexOf('.');
-            if (decimalPlace > -1) {
-                // it tries to add commas after the decimal point as well, and it super doesn't work, so...
-                const strNum = num.toString();
-                const compo = withCommas.substr(0, decimalPlace) + strNum.substr(strNum.indexOf('.'));
-                return compo;
-            } else {
-                return withCommas;
-            }
-        }
 
         function startUp() {
             // Event listener for the Calculate button
@@ -279,71 +194,6 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
         }
 
 
-        //# region NumToWords
-
-        // Convert numbers to words
-        // copyright 25th July 2006, by Stephen Chapman http://javascript.about.com
-        // permission to use this Javascript on your web page is granted
-        // provided that all of the code (including this copyright notice) is
-        // used exactly as shown (you can change the numbering system if you wish)
-
-        // American Numbering System
-        var th = ['', 'thousand,', 'million,', 'billion,', 'trillion,', 'quadrillion,', 'quintillion,'];
-        // uncomment this line for English Number System
-        // var th = ['','thousand','million', 'milliard','billion'];
-
-        var dg = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-        var tn = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
-        var tw = ['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-
-        function toWords(s) {
-            s = s.toString();
-            s = s.replace(/[\, ]/g, '');
-            if (s != parseFloat(s))
-                return 'not a number ';
-            var x = s.indexOf('.');
-            if (x == -1)
-                x = s.length;
-            if (x > 21)
-                return 'too big';
-            var n = s.split('');
-            var str = '';
-            var sk = 0;
-            for (var i = 0; i < x; i++) {
-                if ((x - i) % 3 == 2) {
-                    if (n[i] == '1') {
-                        str += tn[Number(n[i + 1])] + ' ';
-                        i++;
-                        sk = 1;
-                    } else if (n[i] != 0) {
-                        str += tw[n[i] - 2] + ' ';
-                        sk = 1;
-                    }
-                } else if (n[i] != 0) {
-                    str += dg[n[i]] + ' ';
-                    if ((x - i) % 3 == 0)
-                        str += 'hundred and ';
-                    sk = 1;
-                }
-                if ((x - i) % 3 == 1) {
-                    if (sk)
-                        str += th[(x - i - 1) / 3] + ' ';
-                    sk = 0;
-                }
-            }
-            if (x != s.length) {
-                var y = s.length;
-                str += 'point ';
-                for (var i = x + 1; i < y; i++) {
-                    str += dg[n[i]]; //+ '-';
-                    if (i < y - 1) str += '-';
-                }
-
-            }
-            return str.replace(/\s+/g, ' ');
-        }
-
-        //endregion
 
     </script>
 </head>
