@@ -19,6 +19,7 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
     <script src="tucArea.js"></script>
     <script src="tucCapacity.js"></script>
     <script src="tucLength.js"></script>
+    <script src="tucTime.js"></script>
     <script>
         // Global array to hold the loaded CSV data
         let tucData = [];
@@ -166,6 +167,12 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
                         ddlMeasure2.selectedIndex = 1;
                     });
                     break;
+                case 'time':
+                    loadCSV(tucTime, function () {
+                        ddlMeasure1.selectedIndex = 0;
+                        ddlMeasure2.selectedIndex = 1;
+                    });
+                    break;
             }
         }
 
@@ -186,8 +193,9 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
     <select id="ddlMeasurement" onchange="changeMeasurement(this.value)">
         <option value="length">Length</option>
         <option value="area">Area</option>
-        <option value="volume">Volume</option>
         <option value="capacity">Data Capacity</option>
+        <option value="time">Time</option>
+        <option value="volume">Volume</option>
     </select>
     <br />
     <label for="numberInput">Enter a unit to convert:</label>
