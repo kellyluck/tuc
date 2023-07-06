@@ -1,4 +1,4 @@
-# tuc
+# TUC: The Truly Universal Converter
 
 This is a simple novelty program based on the tendency in the media to measure things metaphorically, e.g., "an asteroild the size of ten washing machines", and also the ongoing gag that Americans will use anything for measurement other than the metric system.
 
