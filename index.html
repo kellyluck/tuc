@@ -23,12 +23,6 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
         // Global array to hold the loaded CSV data
         let tucData = [];
 
-
-
-
-
-
-
         // Function to load the CSV file
         function loadCSV(tucDataset, callback) {
             const fileInput = document.createElement("input");
@@ -46,7 +40,6 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
             dataTransfer.items.add(myFile);
             fileInput.files = dataTransfer.files;
 
-            //fileInput.addEventListener("change", function (event) {
             const file = fileInput.files[0];
             const reader = new FileReader();
 
@@ -56,9 +49,6 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
             };
 
             reader.readAsText(file);
-            //});
-
-            //fileInput.click();
         }
 
         // Function to process the loaded CSV data
@@ -80,66 +70,53 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
 
         // Function to populate the dropdowns with the strings from tucData
         function populateDropdowns() {
-            const dropdown1 = document.getElementById("dropdown1");
-            const dropdown2 = document.getElementById("dropdown2");
+            const ddlMeasure1 = document.getElementById("ddlMeasure1");
+            const ddlMeasure2 = document.getElementById("ddlMeasure2");
 
-            dropdown1.innerHTML = '';
-            dropdown2.innerHTML = '';
+            ddlMeasure1.innerHTML = '';
+            ddlMeasure2.innerHTML = '';
             tucData.forEach((item) => {
                 const option1 = document.createElement("option");
-                option1.value = item.string;
+                option1.value = item.number;
                 option1.text = item.string;
-                dropdown1.appendChild(option1);
+                ddlMeasure1.appendChild(option1);
 
                 const option2 = document.createElement("option");
-                option2.value = item.string;
+                option2.value = item.number;
                 option2.text = item.string;
-                dropdown2.appendChild(option2);
+                ddlMeasure2.appendChild(option2);
             });
 
             document.getElementById("numberInput").value = '1';
-
-            // TODO: replace this with async call
-            if (document.getElementById("ddlMeasurement").value === "length") {
-                dropdown1.value = 'Empire State Building';
-                dropdown2.value = 'Banana';
-            }
-            else {
-                dropdown1.selectedIndex = 0;
-                dropdown2.selectedIndex = 1;
-            }
         }
 
         function showComment(value, commentControl) {
             const tucEntry = tucData.find(
                 (item) => item.string === value
             );
-            commentctl = document.getElementById(commentControl);
-            commentctl.innerHTML = tucEntry.comment;
+            if (tucEntry !== undefined) {
+                commentctl = document.getElementById(commentControl);
+                commentctl.innerHTML = tucEntry.comment;
+            }
         }
 
         // Function to perform the calculation and display the result
         function calculate() {
             const numberInput = document.getElementById("numberInput").value;
-            const dropdown1 = document.getElementById("dropdown1");
-            const selectedString1 =
-                dropdown1.options[dropdown1.selectedIndex].value;
-            const dropdown2 = document.getElementById("dropdown2");
-            const selectedString2 =
-                dropdown2.options[dropdown2.selectedIndex].value;
 
-            const selectedData1 = tucData.find(
-                (item) => item.string === selectedString1
-            );
-            const selectedData2 = tucData.find(
-                (item) => item.string === selectedString2
-            );
+            const ddlMeasure1 = document.getElementById("ddlMeasure1")
+            const selected1 = ddlMeasure1.options[ddlMeasure1.selectedIndex];
+            const selectedString1 = selected1.text;
+            const unit1 = ddlMeasure1.value;
+
+            const ddlMeasure2 = document.getElementById("ddlMeasure2")
+            const selected2 = ddlMeasure2.options[ddlMeasure2.selectedIndex];
+            const selectedString2 = selected2.text;
+            const unit2 = ddlMeasure2.value;
 
             const c = Number(numberInput);
-            const d = selectedData1.number;
-            const m = selectedData2.number;
+            const result = (c * unit1) / unit2;
 
-            const result = (c * d) / m;
             // if < 1, can trim down to 20 decimal places but no trialing zeros
             // this is for super small numbers, e.g., 5e-8, which cannot be word-parsed properly.
             var resultString = result.toFixed(20).replace(/(\.\d*?[1-9])0+$/g, "$1");
@@ -153,14 +130,13 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
                 : `Result: ${c} ${selectedString1}(s) = ${resultString} ${selectedString2}(s)`;
         }
 
-
         function startUp() {
             // Event listener for the Calculate button
             const calculateButton = document.getElementById("calculateButton");
             calculateButton.addEventListener("click", calculate);
             loadCSV(tucLength, function () {
-                dropdown1.value = 'Empire State Building';
-                dropdown2.value = 'Banana';
+                ddlMeasure1.selectedIndex = 18;
+                ddlMeasure2.selectedIndex = 4;
             });
         }
 
@@ -168,26 +144,26 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
             switch (measurement) {
                 case 'length':
                     loadCSV(tucLength, function () {
-                        dropdown1.value = 'Empire State Building';
-                        dropdown2.value = 'Banana';
+                        ddlMeasure1.selectedIndex = 18;
+                        ddlMeasure2.selectedIndex = 4;
                     });
                     break;
                 case 'volume':
                     loadCSV(tucVolume, function () {
-                        dropdown1.selectedIndex = 0;
-                        dropdown2.selectedIndex = 1;
+                        ddlMeasure1.selectedIndex = 0;
+                        ddlMeasure2.selectedIndex = 1;
                     });
                     break;
                 case 'area':
                     loadCSV(tucArea, function () {
-                        dropdown1.selectedIndex = 0;
-                        dropdown2.selectedIndex = 1;
+                        ddlMeasure1.selectedIndex = 0;
+                        ddlMeasure2.selectedIndex = 1;
                     });
                     break;
                 case 'capacity':
                     loadCSV(tucCapacity, function () {
-                        dropdown1.selectedIndex = 0;
-                        dropdown2.selectedIndex = 1;
+                        ddlMeasure1.selectedIndex = 0;
+                        ddlMeasure2.selectedIndex = 1;
                     });
                     break;
             }
@@ -217,13 +193,13 @@ Not sure how to handle it if the candidate is smaller but I can work it out.
     <label for="numberInput">Enter a unit to convert:</label>
     <input type="number" id="numberInput" />
     <br />
-    <label for="dropdown1">Base unit:</label>
-    <select id="dropdown1" onchange="showComment(this.value, 'comment1');"></select>
+    <label for="ddlMeasure1">Base unit:</label>
+    <select id="ddlMeasure1" onchange="showComment(this.options[this.selectedIndex].innerText, 'comment1');"></select>
     &nbsp;
     <label id="comment1"></label>
     <br />
-    <label for="dropdown2">New unit:</label>
-    <select id="dropdown2" onchange="showComment(this.value, 'comment2');"></select>
+    <label for="ddlMeasure2">New unit:</label>
+    <select id="ddlMeasure2" onchange="showComment(this.options[this.selectedIndex].innerText, 'comment2');"></select>
     &nbsp;
     <label id="comment2"></label>
     <br />
