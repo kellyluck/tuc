@@ -12,4 +12,5 @@ Hogshead,238.4809,
 Cup (US),0.2365882,
 Teaspoon (US),0.004928922,
 Big Mac,0.897,
+Earth,1097509500000000000000000,
 Swimming pool (olympic),2500000`;

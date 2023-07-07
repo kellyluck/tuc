@@ -59,7 +59,7 @@ function toWords(s) {
     }
     var words = str.replace(/\s+/g, ' ');
     if (words.endsWith("and ")) words = words.slice(0, words.length - 4);
-
+    if (words.indexOf('undefined') > -1) words='too big'; // scientific notation fallback alert
     return words;
 }
 
