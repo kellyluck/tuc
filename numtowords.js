@@ -57,7 +57,10 @@ function toWords(s) {
         }
 
     }
-    return str.replace(/\s+/g, ' ');
+    var words = str.replace(/\s+/g, ' ');
+    if (words.endsWith("and ")) words = words.slice(0, words.length - 4);
+
+    return words;
 }
 
 function addCommas(num) {
