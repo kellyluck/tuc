@@ -13,4 +13,5 @@ Cup (US),0.2365882,
 Teaspoon (US),0.004928922,
 Big Mac,0.897,
 Earth,1097509500000000000000000,
+Turkey,8.6384279852062,It's Turkey Volume Guessing Man!,
 Swimming pool (olympic),2500000`;
