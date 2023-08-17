@@ -52,5 +52,6 @@ Shipping container (20ft),609.6,
 Adult blue whale,3000,
 CVS Receipt,172.72,Generally believed to be the longest one recorded
 Freedom Eagle,219.456,Adult bald eagle wingspan (The most Americanist measurement ever!)
+DeVito,144.8,Height of one (1) standard Danny DeVito
 Empire State Building,38100`;
 
